@@ -1,5 +1,5 @@
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,15 +25,16 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-# Global variable to hold results
-results: Optional[List[Dict[str, Any]]] = None
-
 # Wrap the list of RowData in a class for the request body
 class CardInput(BaseModel):
     cards: List[RowData]  # The incoming payload expects a field named 'cards'
 
+# Dependency to access the results stored in app state
+def get_results_from_state(request: Request):
+    return request.app.state.results
+
 @app.post("/submit")
-async def submit_cards(card_input: CardInput):  # Accept card_input
+async def submit_cards(card_input: CardInput, request: Request):  # Accept card_input and request
     valid_rows = [row for row in card_input.cards if row.card_name.strip() and row.card_id.strip()]
 
     if not valid_rows:
@@ -56,9 +57,9 @@ async def submit_cards(card_input: CardInput):  # Accept card_input
     # Create a DataFrame
     df = pd.DataFrame(data)
 
-    # Call the card finder and store the results
-    global results
+    # Call the card finder and store the results in app state
     results = card_scraper.card_finder(df)
+    request.app.state.results = results  # Store the results in app.state
 
     # Print the DataFrame to the console
     print(f"DataFrame:\n{df}", flush=True)
@@ -66,7 +67,11 @@ async def submit_cards(card_input: CardInput):  # Accept card_input
     return {"message": "Data submitted successfully", "valid_rows": df.to_dict(orient="records")}
 
 @app.get("/results")
-async def get_results():
+async def get_results(request: Request):
+    # Access results from app.state using the dependency
+    results = get_results_from_state(request)
+
     if results is None or len(results) == 0:
         raise HTTPException(status_code=404, detail="No results found")
+    
     return {"results": results}
