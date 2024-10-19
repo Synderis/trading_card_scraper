@@ -1,0 +1,27 @@
+.dynamic-rows-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+input[type="text"] {
+    margin-right: 10px;
+}
+
+.checkboxes {
+    display: flex;
+    align-items: center;
+    margin-left: 10px; /* Space between text inputs and checkboxes */
+}
+
+label {
+    margin-right: 15px; /* Space between checkboxes */
+}

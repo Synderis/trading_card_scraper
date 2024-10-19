@@ -1,0 +1,38 @@
+/* DynamicRows.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the items horizontally */
+    justify-content: center; /* Center the items vertically */
+    margin: 0 auto; /* Center the container */
+    padding: 20px;
+}
+
+.row {
+    display: flex;
+    align-items: center; /* Ensures vertical centering */
+    margin-bottom: 10px;
+}
+
+.row input[type="text"],
+.row label {
+    margin-right: 10px;
+    line-height: 1.5; /* Adjust this to match input and button heights */
+}
+
+button {
+    margin-top: 20px; /* Space above buttons */
+}
+
+.clear-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    line-height: 1.5; /* Adjust line-height to ensure alignment */
+    height: 35px; /* Set the same height for the button as input fields */
+    cursor: pointer;
+}
