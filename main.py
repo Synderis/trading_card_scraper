@@ -12,6 +12,7 @@ class RowData(BaseModel):
     holo: bool
     reverse_holo: bool
     first_edition: bool
+    limited_edition: bool
 
 app = FastAPI()
 
@@ -48,6 +49,7 @@ async def submit_cards(card_input: CardInput):  # Accept card_input
             "holo": row.holo,
             "reverse_holo": row.reverse_holo,
             "first_edition": row.first_edition,
+            "limited_edition": row.limited_edition,
         }
         data.append(card_data)
 

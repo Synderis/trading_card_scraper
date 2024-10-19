@@ -10,6 +10,7 @@ type Row = {
   holo: boolean;
   reverse_holo: boolean;
   first_edition: boolean;
+  limited_edition: boolean;
 };
 
 const DynamicRows: React.FC = () => {
@@ -22,15 +23,16 @@ const DynamicRows: React.FC = () => {
     holo: false,
     reverse_holo: false,
     first_edition: false,
+    limited_edition: false
   }));
 
   const [rows, setRows] = useState<Row[]>(initialRowState);
 
   // Handle changes to the row inputs
-  const handleChange = (index: number, field: 'cardName' | 'cardId' | 'holo' | 'reverse_holo' | 'first_edition', value: string | boolean) => {
+  const handleChange = (index: number, field: 'cardName' | 'cardId' | 'holo' | 'reverse_holo' | 'first_edition' | 'limited_edition', value: string | boolean) => {
     const newRows = [...rows];
 
-    if (field === 'holo' || field === 'reverse_holo' || field === 'first_edition') {
+    if (field === 'holo' || field === 'reverse_holo' || field === 'first_edition' || field === 'limited_edition') {
       newRows[index][field] = value as boolean; // Set checkbox values
     } else {
       newRows[index][field] = value as string; // Set string values
@@ -47,6 +49,7 @@ const DynamicRows: React.FC = () => {
       holo: false,
       reverse_holo: false,
       first_edition: false,
+      limited_edition: false
     }));
     setRows(prevRows => [...prevRows, ...newRowsToAdd]);
   };
@@ -60,6 +63,7 @@ const DynamicRows: React.FC = () => {
       holo: false,
       reverse_holo: false,
       first_edition: false,
+      limited_edition: false
     };
     setRows(newRows);
   };
@@ -81,6 +85,7 @@ const DynamicRows: React.FC = () => {
             holo: row.holo,
             reverse_holo: row.reverse_holo,
             first_edition: row.first_edition,
+            limited_edition: row.limited_edition
         })),
     };
     
@@ -118,6 +123,7 @@ const DynamicRows: React.FC = () => {
             holo: row.holo === 'true' || row.holo === true || row.holo === 1,
             reverse_holo: row.reverse_holo === 'true' || row.reverse_holo === true || row.reverse_holo === 1,
             first_edition: row.first_edition === 'true' || row.first_edition === true || row.first_edition === 1,
+            limited_edition: row.limited_edition === 'true' || row.limited_edition === true || row.limited_edition === 1
           }));
           setRows(parsedRows); // Update the rows state
         },
@@ -184,6 +190,14 @@ const DynamicRows: React.FC = () => {
                 type="checkbox"
                 checked={row.first_edition}
                 onChange={() => handleChange(index, 'first_edition', !row.first_edition)} // Toggle checkbox value
+              />
+              First Edition
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={row.limited_edition}
+                onChange={() => handleChange(index, 'limited_edition', !row.limited_edition)} // Toggle checkbox value
               />
               First Edition
             </label>
