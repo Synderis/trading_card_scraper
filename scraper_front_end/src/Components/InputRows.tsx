@@ -35,9 +35,10 @@ const InputRows: React.FC = () => {
     return updatedRows.map(row => ({
       ...row,
       isInvalid: 
+        (row.cardName || row.cardId) ?
         !row.cardName || 
         !row.cardId || 
-        (row.card_count !== null && row.card_count <= 0), // Check if card_count is null or greater than 0
+        (row.card_count !== null && row.card_count <= 0): false, // Check if card_count is null or greater than 0
     }));
   };
 
