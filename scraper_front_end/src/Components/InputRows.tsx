@@ -199,7 +199,7 @@ const DynamicRows: React.FC = () => {
                 checked={row.limited_edition}
                 onChange={() => handleChange(index, 'limited_edition', !row.limited_edition)} // Toggle checkbox value
               />
-              First Edition
+              Limited Edition
             </label>
             <button type="button" className="clear-btn" onClick={() => handleClearRow(index)}>Clear Row</button> {/* Clear individual row */}
           </div>
