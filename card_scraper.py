@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-def find_hyperlink_text(card_var, id_var, holo_var, reverse_holo_var, first_edition_var, soup):
+def find_hyperlink_text(card_var, id_var, holo_var, reverse_holo_var, first_edition_var, limited_edition_var, soup):
     # Construct search text based on card conditions
     if holo_var:
         search_text = f"{card_var} [Holo] #{id_var}"
@@ -10,6 +10,8 @@ def find_hyperlink_text(card_var, id_var, holo_var, reverse_holo_var, first_edit
         search_text = f"{card_var} [First Edition] #{id_var}"
     elif reverse_holo_var:
         search_text = f"{card_var} [Reverse Holo] #{id_var}"
+    elif limited_edition_var:
+        search_text = f"{card_var} [Limited Edition] #{id_var}"
     else:
         search_text = f"{card_var} #{id_var}"
 
@@ -94,12 +96,13 @@ def card_finder(source_df):
         holo = source_df.iloc[i, 2]
         reverse_holo = source_df.iloc[i, 3]
         first_edition = source_df.iloc[i, 4]
+        limited_edition = source_df.iloc[i, 5]
         
         if 'game' in response.url:
             final_link = response.url
             df_new_rows = extract_table_to_dict(final_link, card, card_id)
         else:
-            matching_link = find_hyperlink_text(card, card_id, holo, reverse_holo, first_edition, soup)
+            matching_link = find_hyperlink_text(card, card_id, holo, reverse_holo, first_edition, limited_edition, soup)
             if matching_link:
                 final_link = matching_link
                 df_new_rows = extract_table_to_dict(final_link, card, card_id)
