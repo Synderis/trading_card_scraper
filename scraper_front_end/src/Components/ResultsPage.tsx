@@ -162,7 +162,6 @@ const ResultsPage: React.FC = () => {
                         <th>Card</th>
                         <th>ID</th>
                         <th>Card Count</th>
-                        <th>Ungraded</th>
                         {Object.keys(results[0]?.grades || {}).map((grade, index) => (
                             <th key={index}>{grade}</th>
                         ))}
@@ -182,7 +181,6 @@ const ResultsPage: React.FC = () => {
                             </td>
                             <td>{item.id}</td>
                             <td>{item.card_count}</td>
-                            <td>{item.Ungraded}</td>
                             {Object.values(item.grades).map((gradeValue, gradeIndex) => (
                                 <td key={gradeIndex}>{gradeValue}</td>
                             ))}
@@ -194,7 +192,6 @@ const ResultsPage: React.FC = () => {
                     <tr>
                         <td colSpan={2}><strong>Totals:</strong></td>
                         <td>{totals.card_count}</td>
-                        <td>${totals.Ungraded.toFixed(2)}</td>
                         {Object.keys(totals).filter(key => key !== 'card_count').map((key, index) => (
                             <td key={index}>${totals[key].toFixed(2)}</td>
                         ))}

@@ -2,64 +2,46 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-def find_hyperlink_text(card_var, id_var, holo_var, reverse_holo_var, first_edition_var, limited_edition_var, soup):
-    # Construct search text based on card conditions
+def find_hyperlink_text(card_var, id_var, holo_var, reverse_holo_var, first_edition_var, soup):
+    card_var = card_var.replace(' ', '-')  # Normalize card name
+    print(f"Searching for: {card_var} with ID: {id_var}")
+
+    # Construct potential search texts based on conditions
+    search_texts = []
+
     if holo_var:
-        search_text = f"{card_var}-holo-{id_var}"
-    elif first_edition_var:
-        search_text = f"{card_var}-first-edition-{id_var}"
-    elif reverse_holo_var:
-        search_text = f"{card_var}-reverse-holo-{id_var}"
-    elif limited_edition_var:
-        search_text = f"{card_var}-limited-edition-{id_var}"
-    else:
-        search_text = f"{card_var}-{id_var}"
+        search_texts.append(f"{card_var}-holo-{id_var}")
+        search_texts.append(f"{card_var}-foil")  # General foil search
+    if first_edition_var:
+        search_texts.append(f"{card_var}-first-edition-{id_var}")
+        search_texts.append(f"{card_var}-1st-edition-{id_var}")  # Adding this for better specificity
+    if reverse_holo_var:
+        search_texts.append(f"{card_var}-reverse-holo-{id_var}")
+    
+    # General search terms for fallback
+    search_texts.append(f"{card_var}-{id_var}")
+    search_texts.append(f"{card_var}")
 
-    card_var = card_var.replace(' ', '-')
-    print(search_text)
+    # Search for matching link text in order of priority
+    for search_text in search_texts:
+        result = find_link(search_text, soup)
+        if result:
+            return result
 
-    # Search for matching link text
+    print("No matching link text found")
+    return None
+
+
+def find_link(search_text, soup):
     links = soup.find_all('a')
     for link in links:
         href = link.get('href')  # Use get to avoid KeyError
         if href and search_text in href.split('/')[-1]:
             print(f"Found link text: {link.get_text()}")
             return href
-    
-    # Fallback search for specific conditions
-    if holo_var:
-        fallback_text = f"{card_var}-foil-{id_var}"
-        for link in links:
-            href = link.get('href')
-            if href and fallback_text in href.split('/')[-1]:
-                print(f"Found link text: {link.get_text()}")
-                return href
-
-    if first_edition_var:
-        fallback_text = f"{card_var}-1st-edition-{id_var}"
-        for link in links:
-            href = link.get('href')
-            if href and fallback_text in href.split('/')[-1]:
-                print(f"Found link text: {link.get_text()}")
-                return href
-
-    # General fallback search (just card name and number)
-    fallback_text = f"{card_var}-{id_var}"
-    for link in links:
-        href = link.get('href')
-        if href and fallback_text in href.split('/')[-1]:
-            print(f"Found link text: {link.get_text()}")
-            return href
-
-    fallback_text = f"{card_var}"
-    for link in links:
-        href = link.get('href')
-        if href and fallback_text == href.split('/')[-1]:
-            print(f"Found link text: {link.get_text()}")
-            return href
-
-    print("No matching link text found")
     return None
+
+
 
 # Function to extract table data and convert it to a dictionary
 def extract_table_to_dict(final_link, card, card_id, card_count):
@@ -121,14 +103,13 @@ def card_finder(source_df):
         holo = source_df.iloc[i, 2]
         reverse_holo = source_df.iloc[i, 3]
         first_edition = source_df.iloc[i, 4]
-        limited_edition = source_df.iloc[i, 5]
-        card_count = source_df.iloc[i, 6]
+        card_count = source_df.iloc[i, 5]
         
         if 'game' in response.url:
             final_link = response.url
             df_new_rows = extract_table_to_dict(final_link, card, card_id, card_count)
         else:
-            matching_link = find_hyperlink_text(card, card_id, holo, reverse_holo, first_edition, limited_edition, soup)
+            matching_link = find_hyperlink_text(card, card_id, holo, reverse_holo, first_edition, soup)
             if matching_link:
                 final_link = matching_link
                 df_new_rows = extract_table_to_dict(final_link, card, card_id, card_count)

@@ -9,7 +9,6 @@ type Row = {
   holo: boolean;
   reverse_holo: boolean;
   first_edition: boolean;
-  limited_edition: boolean;
   card_count: number | null; // Allow card_count to be null
   isInvalid?: boolean;
 };
@@ -24,7 +23,6 @@ const InputRows: React.FC = () => {
     holo: false,
     reverse_holo: false,
     first_edition: false,
-    limited_edition: false,
     card_count: 1, // Initialize as null
     isInvalid: false, // Initialize isInvalid
   }));
@@ -47,7 +45,7 @@ const InputRows: React.FC = () => {
 
     if (field === 'cardName' || field === 'cardId') {
       newRows[index][field] = value as string;
-    } else if (field === 'holo' || field === 'reverse_holo' || field === 'first_edition' || field === 'limited_edition') {
+    } else if (field === 'holo' || field === 'reverse_holo' || field === 'first_edition') {
       newRows[index][field] = value as boolean;
     } else if (field === 'card_count') {
       newRows[index][field] = value === '' ? 1 : Number(value); // Set to null if input is empty
@@ -65,7 +63,6 @@ const InputRows: React.FC = () => {
       holo: false,
       reverse_holo: false,
       first_edition: false,
-      limited_edition: false,
       card_count: 1, // Initialize as null
       isInvalid: false, // Initialize isInvalid
     }));
@@ -80,7 +77,6 @@ const InputRows: React.FC = () => {
       holo: false,
       reverse_holo: false,
       first_edition: false,
-      limited_edition: false,
       card_count: 1, // Initialize as null
       isInvalid: false, // Reset isInvalid
     };
@@ -111,7 +107,6 @@ const InputRows: React.FC = () => {
         holo: row.holo,
         reverse_holo: row.reverse_holo,
         first_edition: row.first_edition,
-        limited_edition: row.limited_edition,
         card_count: row.card_count, // No need to convert to Number, already handled
       })),
     };
@@ -147,7 +142,6 @@ const InputRows: React.FC = () => {
               !(row.holo === 'true' || row.holo === true || row.holo === 1 || row.holo === 'false' || row.holo === false || row.holo === 0 || row.holo === null) ||
               !(row.reverse_holo === 'true' || row.reverse_holo === true || row.reverse_holo === 1 || row.reverse_holo === 'false' || row.reverse_holo === false || row.reverse_holo === 0 || row.reverse_holo === null) ||
               !(row.first_edition === 'true' || row.first_edition === true || row.first_edition === 1 || row.first_edition === 'false' || row.first_edition === false || row.first_edition === 0 || row.first_edition === null) ||
-              !(row.limited_edition === 'true' || row.limited_edition === true || row.limited_edition === 1 || row.limited_edition === 'false' || row.limited_edition === false || row.limited_edition === 0 || row.limited_edition === null) ||
               !(row.card_count === null || row.card_count > 0); // Validate card_count
 
             return {
@@ -156,7 +150,6 @@ const InputRows: React.FC = () => {
               holo: row.holo === 'true' || row.holo === true || row.holo === 1,
               reverse_holo: row.reverse_holo === 'true' || row.reverse_holo === true || row.reverse_holo === 1,
               first_edition: row.first_edition === 'true' || row.first_edition === true || row.first_edition === 1,
-              limited_edition: row.limited_edition === 'true' || row.limited_edition === true || row.limited_edition === 1,
               // Set card_count to 1 if it's null or empty
               card_count: row.card_count === null || row.card_count === '' ? 1 : row.card_count,
               isInvalid,
@@ -173,8 +166,8 @@ const InputRows: React.FC = () => {
 
   const downloadCSVTemplate = () => {
     const csvContent = "data:text/csv;charset=utf-8," + 
-      "cardName,cardId,holo,reverse_holo,first_edition,limited_edition,card_count\n" +
-      ",,,,,,"; // One empty line for a row
+      "cardName,cardId,holo,reverse_holo,first_edition,card_count\n" +
+      ",,,,,"; // One empty line for a row
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -204,9 +197,6 @@ const InputRows: React.FC = () => {
             </label>
             <label>
               <input type="checkbox" checked={row.first_edition} onChange={(e) => handleChange(index, 'first_edition', e.target.checked)} /> First Edition
-            </label>
-            <label>
-              <input type="checkbox" checked={row.limited_edition} onChange={(e) => handleChange(index, 'limited_edition', e.target.checked)} /> Limited Edition
             </label>
             <input type="number" value={row.card_count || ''} onChange={(e) => handleChange(index, 'card_count', e.target.value)} />
             <button type="button" className="clear-btn" onClick={() => handleClearRow(index)}>Clear</button>
