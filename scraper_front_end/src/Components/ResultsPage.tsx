@@ -70,7 +70,6 @@ const ResultsPage: React.FC = () => {
             'Card',
             'ID',
             'Card Count',
-            'Ungraded',
             ...Object.keys(data[0].grades),
             'Final Link',
         ].join(',');
@@ -79,7 +78,6 @@ const ResultsPage: React.FC = () => {
             item.card,
             item.id,
             item.card_count,
-            item.Ungraded,
             ...Object.values(item.grades),
             item.final_link,
         ].join(',')).join('\n');
@@ -89,7 +87,6 @@ const ResultsPage: React.FC = () => {
             'Totals:',
             '',
             totals.card_count,
-            `$${totals.Ungraded.toFixed(2)}`,
             ...Object.keys(totals).filter(key => key !== 'card_count').map(key => `$${totals[key].toFixed(2)}`),
             '',
         ].join(',');
