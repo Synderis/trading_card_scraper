@@ -27,3 +27,33 @@ th {
 .download-button:hover {
     background-color: #45a049; /* Darker green on hover */
 }
+
+.img-hover-link {
+    position: relative;
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.img-hover-link:hover .img-hover-tooltip {
+    display: block;
+}
+
+.img-hover-tooltip {
+    display: none;
+    position: absolute;
+    top: 0;  /* Aligns the image vertically with the link */
+    left: 110%;  /* Moves the image to the right of the link, adjust percentage if needed */
+    z-index: 10;
+    width: 200px;  /* Adjust width as needed */
+    height: auto;
+    border: 1px solid #ccc;
+    background-color: white;
+    padding: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+.img-hover-tooltip img {
+    width: 100%;
+    height: auto;
+}

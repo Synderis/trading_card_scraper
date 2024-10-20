@@ -58,8 +58,6 @@ def find_hyperlink_text(card_var, id_var, holo_var, reverse_holo_var, first_edit
             print(f"Found link text: {link.get_text()}")
             return href
 
-
-
     print("No matching link text found")
     return None
 
@@ -70,13 +68,12 @@ def extract_table_to_dict(final_link, card, card_id, card_count):
         'card', 'id', 'Ungraded', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4',
         'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9',
         'Grade 9.5', 'SGC 10', 'CGC 10', 'PSA 10', 'BGS 10',
-        'BGS 10 Black', 'CGC 10 Pristine', 'final_link', 'card_count'
+        'BGS 10 Black', 'CGC 10 Pristine', 'final_link', 'card_count', 'img_link'
     ]
     
     try:
         response = requests.get(final_link)
         soup = BeautifulSoup(response.text, 'html.parser')
-
         table = soup.find(id='full-prices')
         rows = table.find_all('tr') if table else []
 
@@ -90,7 +87,12 @@ def extract_table_to_dict(final_link, card, card_id, card_count):
                 if label in table_data:
                     table_data[label] = value
 
-        # Set the final link, card, number and card count
+        # Get the img_link from the img src property
+        img_element = soup.find_all('img', {'itemprop': 'image'})[0]
+        img_link = img_element['src'] if img_element else 'not_available'
+        table_data['img_link'] = img_link
+
+        # Set the final link, card, number, and card count
         table_data['final_link'] = final_link
         table_data['card'] = card
         table_data['id'] = card_id
@@ -105,7 +107,6 @@ def card_finder(source_df):
     # Capitalize each word in the "card" column
     source_df[['card', 'id']] = source_df[['card', 'id']].apply(lambda x: x.str.strip().str.lower())
 
-    
     # Create a list to hold new rows
     new_rows = []
 
@@ -137,7 +138,7 @@ def card_finder(source_df):
                     'card', 'id', 'card_count', 'Ungraded', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4',
                     'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9',
                     'Grade 9.5', 'SGC 10', 'CGC 10', 'PSA 10', 'BGS 10',
-                    'BGS 10 Black', 'CGC 10 Pristine', 'final_link']}
+                    'BGS 10 Black', 'CGC 10 Pristine', 'final_link', 'img_link']}
                 df_new_rows['card'] = card
                 df_new_rows['id'] = card_id
                 df_new_rows['card_count'] = card_count

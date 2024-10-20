@@ -24,6 +24,7 @@ interface ResultData {
     'BGS 10 Black': string;
     'CGC 10 Pristine': string;
     final_link: string;
+    img_link: string;
 }
 
 const ResultsPage: React.FC = () => {
@@ -66,6 +67,7 @@ const ResultsPage: React.FC = () => {
                         'BGS 10 Black': data.results['BGS 10 Black'][i],
                         'CGC 10 Pristine': data.results['CGC 10 Pristine'][i],
                         final_link: data.results.final_link[i],
+                        img_link: data.results.img_link[i],
                     });
                 }
                 setResults(formattedResults);
@@ -263,7 +265,15 @@ const ResultsPage: React.FC = () => {
                 <tbody>
                     {results.map((item, index) => (
                         <tr key={index}>
-                            <td>{item.card}</td>
+                            <td>
+                                <span className="img-hover-link">
+                                    {item.card}
+                                    <span className="img-hover-tooltip">
+                                        <img src={item.img_link} alt="Card" />
+                                    </span>
+                                </span>
+                            </td>
+                            {/* <td>{item.card}</td> */}
                             <td>{item.id}</td>
                             <td>{item.card_count}</td>
                             <td>{item.Ungraded}</td>

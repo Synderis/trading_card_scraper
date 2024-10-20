@@ -35,9 +35,6 @@ class CardInput(BaseModel):
 def get_results_from_state(request: Request):
     return request.app.state.results
 
-def get_card_totals_from_state(request: Request):
-    return request.app.state.card_totals
-
 @app.post("/submit")
 async def submit_cards(card_input: CardInput, request: Request):  # Accept card_input and request
     valid_rows = [row for row in card_input.cards if row.card_name.strip() and row.card_id.strip()]
@@ -67,26 +64,6 @@ async def submit_cards(card_input: CardInput, request: Request):  # Accept card_
     # Call the card finder and store the results in app state
     results = card_scraper.card_finder(df)
     request.app.state.results = results  # Store the results in app.state
-
-    # grade_columns = ['Ungraded', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 
-    #                 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 9.5', 'SGC 10', 'CGC 10', 'PSA 10', 
-    #                 'BGS 10', 'BGS 10 Black', 'CGC 10 Pristine']
-    
-    # per_card_values = results.copy()
-    # per_card_values[grade_columns] = per_card_values[grade_columns].apply(lambda x: x.str.replace('$', '').str.replace('-', ''))
-    # per_card_values[grade_columns] = per_card_values[grade_columns].apply(pd.to_numeric, errors='coerce').fillna(0)
-    # per_card_values[grade_columns] = per_card_values[grade_columns].multiply(df['card_count'], axis=0)
-    
-    # sum_columns = grade_columns + ['card_count']
-    # card_totals = per_card_values[sum_columns].sum()
-
-    # Convert card totals to strings with 2 decimal places
-    # formatted_card_totals = {key: f"{value:.2f}" for key, value in card_totals.items()}
-
-    # print(formatted_card_totals, flush=True)
-    
-    # Store card totals in app state
-    # request.app.state.card_totals = formatted_card_totals
     
     # Print the DataFrame to the console
     print(f"DataFrame:\n{df}", flush=True)
@@ -106,16 +83,6 @@ async def get_results(request: Request):
     if results is None or len(results) == 0:
         raise HTTPException(status_code=404, detail="No results found")
 
-    # Convert results if they contain numpy types
-    # results = [
-    #     {k: (v.item() if isinstance(v, (np.int64, np.float64)) else v) for k, v in result.items()}
-    #     if isinstance(result, dict) else result
-    #     for result in results
-    # ]
-
-    # Since card_totals values are already strings, we can just pass them through
-    # totals_dict = {key: value for key, value in card_totals.items()}
-
     # print("Final card_totals to return:", totals_dict)  # Log the final totals to be returned
     print("Final results to return:", results)  # Log the final results to be returned
 
@@ -123,7 +90,3 @@ async def get_results(request: Request):
         "results": results,
     }
     
-@app.get("/card-totals")
-async def get_card_totals(request: Request):
-    totals = get_card_totals_from_state(request)
-    return {"card_totals": totals}
