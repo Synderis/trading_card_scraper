@@ -6,7 +6,7 @@ const AboutMe: React.FC = () => {
         <div className="about-container">
             <h1>About Me</h1>
             <p>
-                Welcome to my Bulk card pricing tool. I go by Synderis online and my background is in Data Engineering/Software Engineering primarily in Python and SQL.
+                Welcome to my bulk card pricing tool. I go by Synderis online and my background is in Data Engineering/Software Engineering primarily in Python and SQL.
                 I had a lot of cards I wanted to look up and the tools and APIs currently available were lackluster at best.
                 There wasn't an easy way to get to the exact card pages I wanted without clicking on hundreds of links,
                 so I decided to create my own. In that process I figured some of my friends might want to use it too so I created a front end for the project.
@@ -24,7 +24,7 @@ const AboutMe: React.FC = () => {
             <p>
                 This project allows users to import CSV data, manage their cards, 
                 perform data validation, and get pricing information by grade. 
-                It includes features for tracking holo, reverse holo, first edition, and limited edition cards, 
+                It includes features for tracking holo, reverse holo, and first edition cards, 
                 ensuring accurate card information is pulled.
             </p>
 
