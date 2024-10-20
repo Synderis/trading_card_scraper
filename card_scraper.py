@@ -11,10 +11,9 @@ def find_hyperlink_text(card_var, id_var, holo_var, reverse_holo_var, first_edit
 
     if holo_var:
         search_texts.append(f"{card_var}-holo-{id_var}")
-        search_texts.append(f"{card_var}-foil")  # General foil search
+        search_texts.append(f"{card_var}-foil")
     if first_edition_var:
-        search_texts.append(f"{card_var}-first-edition-{id_var}")
-        search_texts.append(f"{card_var}-1st-edition-{id_var}")  # Adding this for better specificity
+        search_texts.append(f"{card_var}-1st-edition-{id_var}") 
     if reverse_holo_var:
         search_texts.append(f"{card_var}-reverse-holo-{id_var}")
     

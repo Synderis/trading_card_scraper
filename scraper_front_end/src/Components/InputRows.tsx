@@ -63,7 +63,7 @@ const InputRows: React.FC = () => {
       holo: false,
       reverse_holo: false,
       first_edition: false,
-      card_count: 1, // Initialize as null
+      card_count: 1,
       isInvalid: false, // Initialize isInvalid
     }));
     setRows(prevRows => [...prevRows, ...newRowsToAdd]);
@@ -77,7 +77,7 @@ const InputRows: React.FC = () => {
       holo: false,
       reverse_holo: false,
       first_edition: false,
-      card_count: 1, // Initialize as null
+      card_count: 1,
       isInvalid: false, // Reset isInvalid
     };
     setRows(newRows);

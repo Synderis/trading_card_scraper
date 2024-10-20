@@ -13,7 +13,6 @@ class RowData(BaseModel):
     holo: bool
     reverse_holo: bool
     first_edition: bool
-    limited_edition: bool
     card_count: int
 
 app = FastAPI()
@@ -52,7 +51,6 @@ async def submit_cards(card_input: CardInput, request: Request):  # Accept card_
             "holo": row.holo,
             "reverse_holo": row.reverse_holo,
             "first_edition": row.first_edition,
-            "limited_edition": row.limited_edition,
             "card_count": row.card_count
         }
         data.append(card_data)
