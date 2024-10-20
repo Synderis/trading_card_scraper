@@ -5,6 +5,7 @@ import '../CSS Sheets/ResultsPage.css';
 interface ResultData {
     card: string;
     id: string;
+    card_count: string;
     Ungraded: string;
     'Grade 1': string;
     'Grade 2': string;
@@ -39,28 +40,34 @@ const ResultsPage: React.FC = () => {
                 }
                 const data = await response.json();
                 // Extract the results from the response
-                const formattedResults = Object.keys(data.results.card).map(key => ({
-                    card: data.results.card[key],
-                    id: data.results.id[key],
-                    Ungraded: data.results.Ungraded[key],
-                    'Grade 1': data.results['Grade 1'][key],
-                    'Grade 2': data.results['Grade 2'][key],
-                    'Grade 3': data.results['Grade 3'][key],
-                    'Grade 4': data.results['Grade 4'][key],
-                    'Grade 5': data.results['Grade 5'][key],
-                    'Grade 6': data.results['Grade 6'][key],
-                    'Grade 7': data.results['Grade 7'][key],
-                    'Grade 8': data.results['Grade 8'][key],
-                    'Grade 9': data.results['Grade 9'][key],
-                    'Grade 9.5': data.results['Grade 9.5'][key],
-                    'SGC 10': data.results['SGC 10'][key],
-                    'CGC 10': data.results['CGC 10'][key],
-                    'PSA 10': data.results['PSA 10'][key],
-                    'BGS 10': data.results['BGS 10'][key],
-                    'BGS 10 Black': data.results['BGS 10 Black'][key],
-                    'CGC 10 Pristine': data.results['CGC 10 Pristine'][key],
-                    final_link: data.results.final_link[key],
-                }));
+                const formattedResults: ResultData[] = [];
+                const length = Object.keys(data.results.card).length;
+
+                for (let i = 0; i < length; i++) {
+                    formattedResults.push({
+                        card: data.results.card[i],
+                        id: data.results.id[i],
+                        card_count: data.results.card_count[i],
+                        Ungraded: data.results.Ungraded[i],
+                        'Grade 1': data.results['Grade 1'][i],
+                        'Grade 2': data.results['Grade 2'][i],
+                        'Grade 3': data.results['Grade 3'][i],
+                        'Grade 4': data.results['Grade 4'][i],
+                        'Grade 5': data.results['Grade 5'][i],
+                        'Grade 6': data.results['Grade 6'][i],
+                        'Grade 7': data.results['Grade 7'][i],
+                        'Grade 8': data.results['Grade 8'][i],
+                        'Grade 9': data.results['Grade 9'][i],
+                        'Grade 9.5': data.results['Grade 9.5'][i],
+                        'SGC 10': data.results['SGC 10'][i],
+                        'CGC 10': data.results['CGC 10'][i],
+                        'PSA 10': data.results['PSA 10'][i],
+                        'BGS 10': data.results['BGS 10'][i],
+                        'BGS 10 Black': data.results['BGS 10 Black'][i],
+                        'CGC 10 Pristine': data.results['CGC 10 Pristine'][i],
+                        final_link: data.results.final_link[i],
+                    });
+                }
                 setResults(formattedResults);
             } catch (err) {
                 setError((err as Error)?.message || 'An unknown error occurred');
@@ -71,11 +78,11 @@ const ResultsPage: React.FC = () => {
         fetchResults();
     }, []);
 
-    // Function to convert data to CSV format
-    const convertToCSV = (data: ResultData[]) => {
+    const convertToCSV = (data: ResultData[], totals: any) => {
         const header = [
             'Card',
             'ID',
+            'Card Count',
             'Ungraded',
             'Grade 1',
             'Grade 2',
@@ -99,6 +106,7 @@ const ResultsPage: React.FC = () => {
         const rows = data.map(item => [
             item.card,
             item.id,
+            item.card_count,
             item.Ungraded,
             item['Grade 1'],
             item['Grade 2'],
@@ -119,12 +127,37 @@ const ResultsPage: React.FC = () => {
             item.final_link,
         ].join(',')).join('\n');
 
-        return `${header}\n${rows}`;
+        // Add totals row
+        const totalsRow = [
+            'Totals:',
+            '',
+            totals.card_count,
+            `$${totals.Ungraded.toFixed(2)}`,
+            `$${totals['Grade 1'].toFixed(2)}`,
+            `$${totals['Grade 2'].toFixed(2)}`,
+            `$${totals['Grade 3'].toFixed(2)}`,
+            `$${totals['Grade 4'].toFixed(2)}`,
+            `$${totals['Grade 5'].toFixed(2)}`,
+            `$${totals['Grade 6'].toFixed(2)}`,
+            `$${totals['Grade 7'].toFixed(2)}`,
+            `$${totals['Grade 8'].toFixed(2)}`,
+            `$${totals['Grade 9'].toFixed(2)}`,
+            `$${totals['Grade 9.5'].toFixed(2)}`,
+            `$${totals['SGC 10'].toFixed(2)}`,
+            `$${totals['CGC 10'].toFixed(2)}`,
+            `$${totals['PSA 10'].toFixed(2)}`,
+            `$${totals['BGS 10'].toFixed(2)}`,
+            `$${totals['BGS 10 Black'].toFixed(2)}`,
+            `$${totals['CGC 10 Pristine'].toFixed(2)}`,
+            '',
+        ].join(',');
+
+        return `${header}\n${rows}\n${totalsRow}`;
     };
 
-    // Function to download CSV
     const downloadCSV = () => {
-        const csvData = convertToCSV(results);
+        const totals = calculateTotals(results);
+        const csvData = convertToCSV(results, totals);
         const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
@@ -138,8 +171,61 @@ const ResultsPage: React.FC = () => {
         navigate('/'); // Navigate to the root path
     };
 
+    // Function to calculate totals for each grade category
+    const calculateTotals = (results: ResultData[]) => {
+        const initialTotals = {
+            card_count: 0,
+            Ungraded: 0,
+            'Grade 1': 0,
+            'Grade 2': 0,
+            'Grade 3': 0,
+            'Grade 4': 0,
+            'Grade 5': 0,
+            'Grade 6': 0,
+            'Grade 7': 0,
+            'Grade 8': 0,
+            'Grade 9': 0,
+            'Grade 9.5': 0,
+            'SGC 10': 0,
+            'CGC 10': 0,
+            'PSA 10': 0,
+            'BGS 10': 0,
+            'BGS 10 Black': 0,
+            'CGC 10 Pristine': 0,
+        };
+    
+        return results.reduce((totals, item) => {
+            const count = parseInt(item.card_count) || 0; // Convert card_count to an integer
+    
+            totals.card_count += count; // Add card_count
+    
+            // Calculate totals for each grade category multiplied by card_count
+            totals.Ungraded += (parseFloat(item.Ungraded.replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 1'] += (parseFloat(item['Grade 1'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 2'] += (parseFloat(item['Grade 2'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 3'] += (parseFloat(item['Grade 3'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 4'] += (parseFloat(item['Grade 4'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 5'] += (parseFloat(item['Grade 5'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 6'] += (parseFloat(item['Grade 6'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 7'] += (parseFloat(item['Grade 7'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 8'] += (parseFloat(item['Grade 8'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 9'] += (parseFloat(item['Grade 9'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['Grade 9.5'] += (parseFloat(item['Grade 9.5'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['SGC 10'] += (parseFloat(item['SGC 10'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['CGC 10'] += (parseFloat(item['CGC 10'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['PSA 10'] += (parseFloat(item['PSA 10'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['BGS 10'] += (parseFloat(item['BGS 10'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['BGS 10 Black'] += (parseFloat(item['BGS 10 Black'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+            totals['CGC 10 Pristine'] += (parseFloat(item['CGC 10 Pristine'].replace(/[^0-9.-]+/g, '')) || 0) * count;
+    
+            return totals;
+        }, initialTotals);
+    };
+    
+    const totals = calculateTotals(results);
+
     return (
-        <div>
+        <div className="results-page">
             <h1>Results</h1>
             {error && <p>Error: {error}</p>}
             <button onClick={downloadCSV} style={{ marginBottom: '20px' }} className="download-button">
@@ -148,11 +234,12 @@ const ResultsPage: React.FC = () => {
             <button onClick={goHome} style={{ marginBottom: '20px', marginLeft: '10px' }}>
                 Return to Input Page
             </button>
-            <table className="results-table">
+            <table>
                 <thead>
                     <tr>
                         <th>Card</th>
                         <th>ID</th>
+                        <th>Card Count</th>
                         <th>Ungraded</th>
                         <th>Grade 1</th>
                         <th>Grade 2</th>
@@ -170,42 +257,59 @@ const ResultsPage: React.FC = () => {
                         <th>BGS 10</th>
                         <th>BGS 10 Black</th>
                         <th>CGC 10 Pristine</th>
-                        <th>Final Link</th>
+                        <th>Page Link</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {results.length > 0 ? (
-                        results.map((result, index) => (
-                            <tr key={index}>
-                                <td>{result.card}</td>
-                                <td>{result.id}</td>
-                                <td>{result.Ungraded}</td>
-                                <td>{result['Grade 1']}</td>
-                                <td>{result['Grade 2']}</td>
-                                <td>{result['Grade 3']}</td>
-                                <td>{result['Grade 4']}</td>
-                                <td>{result['Grade 5']}</td>
-                                <td>{result['Grade 6']}</td>
-                                <td>{result['Grade 7']}</td>
-                                <td>{result['Grade 8']}</td>
-                                <td>{result['Grade 9']}</td>
-                                <td>{result['Grade 9.5']}</td>
-                                <td>{result['SGC 10']}</td>
-                                <td>{result['CGC 10']}</td>
-                                <td>{result['PSA 10']}</td>
-                                <td>{result['BGS 10']}</td>
-                                <td>{result['BGS 10 Black']}</td>
-                                <td>{result['CGC 10 Pristine']}</td>
-                                <td>
-                                    <a href={result.final_link} target="_blank" rel="noopener noreferrer">View</a>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan={18}>No results found</td>
+                    {results.map((item, index) => (
+                        <tr key={index}>
+                            <td>{item.card}</td>
+                            <td>{item.id}</td>
+                            <td>{item.card_count}</td>
+                            <td>{item.Ungraded}</td>
+                            <td>{item['Grade 1']}</td>
+                            <td>{item['Grade 2']}</td>
+                            <td>{item['Grade 3']}</td>
+                            <td>{item['Grade 4']}</td>
+                            <td>{item['Grade 5']}</td>
+                            <td>{item['Grade 6']}</td>
+                            <td>{item['Grade 7']}</td>
+                            <td>{item['Grade 8']}</td>
+                            <td>{item['Grade 9']}</td>
+                            <td>{item['Grade 9.5']}</td>
+                            <td>{item['SGC 10']}</td>
+                            <td>{item['CGC 10']}</td>
+                            <td>{item['PSA 10']}</td>
+                            <td>{item['BGS 10']}</td>
+                            <td>{item['BGS 10 Black']}</td>
+                            <td>{item['CGC 10 Pristine']}</td>
+                            <td>
+                                <a href={item.final_link} target="_blank" rel="noopener noreferrer">View</a>
+                            </td>
                         </tr>
-                    )}
+                    ))}
+                    <tr>
+                        <td colSpan={2}><strong>Totals:</strong></td>
+                        <td>{totals.card_count}</td>
+                        <td>${totals.Ungraded.toFixed(2)}</td>
+                        <td>${totals['Grade 1'].toFixed(2)}</td>
+                        <td>${totals['Grade 2'].toFixed(2)}</td>
+                        <td>${totals['Grade 3'].toFixed(2)}</td>
+                        <td>${totals['Grade 4'].toFixed(2)}</td>
+                        <td>${totals['Grade 5'].toFixed(2)}</td>
+                        <td>${totals['Grade 6'].toFixed(2)}</td>
+                        <td>${totals['Grade 7'].toFixed(2)}</td>
+                        <td>${totals['Grade 8'].toFixed(2)}</td>
+                        <td>${totals['Grade 9'].toFixed(2)}</td>
+                        <td>${totals['Grade 9.5'].toFixed(2)}</td>
+                        <td>${totals['SGC 10'].toFixed(2)}</td>
+                        <td>${totals['CGC 10'].toFixed(2)}</td>
+                        <td>${totals['PSA 10'].toFixed(2)}</td>
+                        <td>${totals['BGS 10'].toFixed(2)}</td>
+                        <td>${totals['BGS 10 Black'].toFixed(2)}</td>
+                        <td>${totals['CGC 10 Pristine'].toFixed(2)}</td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>
         </div>

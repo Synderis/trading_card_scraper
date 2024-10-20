@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from fastapi.middleware.cors import CORSMiddleware
 import card_scraper
+import numpy as np
 
 # Define the Pydantic model for each row of data
 class RowData(BaseModel):
@@ -13,6 +14,7 @@ class RowData(BaseModel):
     reverse_holo: bool
     first_edition: bool
     limited_edition: bool
+    card_count: int
 
 app = FastAPI()
 
@@ -33,6 +35,9 @@ class CardInput(BaseModel):
 def get_results_from_state(request: Request):
     return request.app.state.results
 
+def get_card_totals_from_state(request: Request):
+    return request.app.state.card_totals
+
 @app.post("/submit")
 async def submit_cards(card_input: CardInput, request: Request):  # Accept card_input and request
     valid_rows = [row for row in card_input.cards if row.card_name.strip() and row.card_id.strip()]
@@ -51,27 +56,74 @@ async def submit_cards(card_input: CardInput, request: Request):  # Accept card_
             "reverse_holo": row.reverse_holo,
             "first_edition": row.first_edition,
             "limited_edition": row.limited_edition,
+            "card_count": row.card_count
         }
         data.append(card_data)
 
     # Create a DataFrame
     df = pd.DataFrame(data)
+    df['card_count'] = df['card_count'].astype(str)
 
     # Call the card finder and store the results in app state
     results = card_scraper.card_finder(df)
     request.app.state.results = results  # Store the results in app.state
 
+    # grade_columns = ['Ungraded', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 
+    #                 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 9.5', 'SGC 10', 'CGC 10', 'PSA 10', 
+    #                 'BGS 10', 'BGS 10 Black', 'CGC 10 Pristine']
+    
+    # per_card_values = results.copy()
+    # per_card_values[grade_columns] = per_card_values[grade_columns].apply(lambda x: x.str.replace('$', '').str.replace('-', ''))
+    # per_card_values[grade_columns] = per_card_values[grade_columns].apply(pd.to_numeric, errors='coerce').fillna(0)
+    # per_card_values[grade_columns] = per_card_values[grade_columns].multiply(df['card_count'], axis=0)
+    
+    # sum_columns = grade_columns + ['card_count']
+    # card_totals = per_card_values[sum_columns].sum()
+
+    # Convert card totals to strings with 2 decimal places
+    # formatted_card_totals = {key: f"{value:.2f}" for key, value in card_totals.items()}
+
+    # print(formatted_card_totals, flush=True)
+    
+    # Store card totals in app state
+    # request.app.state.card_totals = formatted_card_totals
+    
     # Print the DataFrame to the console
     print(f"DataFrame:\n{df}", flush=True)
 
     return {"message": "Data submitted successfully", "valid_rows": df.to_dict(orient="records")}
 
+
 @app.get("/results")
 async def get_results(request: Request):
-    # Access results from app.state using the dependency
     results = get_results_from_state(request)
+    # card_totals = get_card_totals_from_state(request)
+
+    # Debugging: Log the results and card_totals
+    print("Results from get_results_from_state:", results)  # Check what results contain
+    # print("Original card_totals:", card_totals)
 
     if results is None or len(results) == 0:
         raise HTTPException(status_code=404, detail="No results found")
+
+    # Convert results if they contain numpy types
+    # results = [
+    #     {k: (v.item() if isinstance(v, (np.int64, np.float64)) else v) for k, v in result.items()}
+    #     if isinstance(result, dict) else result
+    #     for result in results
+    # ]
+
+    # Since card_totals values are already strings, we can just pass them through
+    # totals_dict = {key: value for key, value in card_totals.items()}
+
+    # print("Final card_totals to return:", totals_dict)  # Log the final totals to be returned
+    print("Final results to return:", results)  # Log the final results to be returned
+
+    return {
+        "results": results,
+    }
     
-    return {"results": results}
+@app.get("/card-totals")
+async def get_card_totals(request: Request):
+    totals = get_card_totals_from_state(request)
+    return {"card_totals": totals}
