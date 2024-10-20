@@ -14,7 +14,7 @@ type Row = {
   isInvalid?: boolean;
 };
 
-const DynamicRows: React.FC = () => {
+const InputRows: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -148,7 +148,7 @@ const DynamicRows: React.FC = () => {
               !(row.first_edition === 'true' || row.first_edition === true || row.first_edition === 1 || row.first_edition === 'false' || row.first_edition === false || row.first_edition === 0 || row.first_edition === null) ||
               !(row.limited_edition === 'true' || row.limited_edition === true || row.limited_edition === 1 || row.limited_edition === 'false' || row.limited_edition === false || row.limited_edition === 0 || row.limited_edition === null) ||
               !(row.card_count === null || row.card_count > 0); // Validate card_count
-  
+
             return {
               cardName: row.cardName || '',
               cardId: row.cardId || '',
@@ -193,68 +193,30 @@ const DynamicRows: React.FC = () => {
       <form onSubmit={handleSubmit}>
         {rows.map((row, index) => (
           <div key={index} className={`row ${row.isInvalid ? 'invalid-row' : ''}`}>
-            <input
-              type="text"
-              value={row.cardName}
-              onChange={(e) => handleChange(index, 'cardName', e.target.value)}
-              placeholder="Card Name"
-            />
-            <input
-              type="text"
-              value={row.cardId}
-              onChange={(e) => handleChange(index, 'cardId', e.target.value)}
-              placeholder="Card ID"
-            />
+            <input type="text" placeholder="Card Name" value={row.cardName} onChange={(e) => handleChange(index, 'cardName', e.target.value)} />
+            <input type="text" placeholder="Card ID" value={row.cardId} onChange={(e) => handleChange(index, 'cardId', e.target.value)} />
             <label>
-              <input
-                type="checkbox"
-                checked={row.holo}
-                onChange={() => handleChange(index, 'holo', !row.holo)}
-              />
-              Holo
+              <input type="checkbox" checked={row.holo} onChange={(e) => handleChange(index, 'holo', e.target.checked)} /> Holo
             </label>
             <label>
-              <input
-                type="checkbox"
-                checked={row.reverse_holo}
-                onChange={() => handleChange(index, 'reverse_holo', !row.reverse_holo)}
-              />
-              Reverse Holo
+              <input type="checkbox" checked={row.reverse_holo} onChange={(e) => handleChange(index, 'reverse_holo', e.target.checked)} /> Reverse Holo
             </label>
             <label>
-              <input
-                type="checkbox"
-                checked={row.first_edition}
-                onChange={() => handleChange(index, 'first_edition', !row.first_edition)}
-              />
-              First Edition
+              <input type="checkbox" checked={row.first_edition} onChange={(e) => handleChange(index, 'first_edition', e.target.checked)} /> First Edition
             </label>
             <label>
-              <input
-                type="checkbox"
-                checked={row.limited_edition}
-                onChange={() => handleChange(index, 'limited_edition', !row.limited_edition)}
-              />
-              Limited Edition
+              <input type="checkbox" checked={row.limited_edition} onChange={(e) => handleChange(index, 'limited_edition', e.target.checked)} /> Limited Edition
             </label>
-            Card Count: 
-            <input
-              type="number"
-              value={row.card_count === null ? '' : row.card_count} // Display as empty string if null
-              onChange={(e) => handleChange(index, 'card_count', e.target.value)}
-              placeholder="Card Count"
-              maxLength={3}
-              style={{ marginLeft: '10px' }}
-            />
+            <input type="number" value={row.card_count || ''} onChange={(e) => handleChange(index, 'card_count', e.target.value)} />
             <button type="button" className="clear-btn" onClick={() => handleClearRow(index)}>Clear</button>
           </div>
         ))}
-        <button type="button" onClick={handleAddRows}>Add Rows</button>
-        <button type="button" className="clear-all-btn" onClick={handleClearAllRows}>Clear All</button>
+        <button type="button" onClick={handleAddRows}>Add 10 Rows</button>
+        <button type="button" className="clear-all-btn" onClick={handleClearAllRows}>Clear All Rows</button>
         <button type="submit" className="submit-btn">Submit</button>
       </form>
     </div>
   );
 };
 
-export default DynamicRows;
+export default InputRows;

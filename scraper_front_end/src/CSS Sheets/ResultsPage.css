@@ -13,6 +13,29 @@ th {
     background-color: #f2f2f2; /* Light grey background for headers */
 }
 
+.dark-mode table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dark-mode th, .dark-mode td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.dark-mode th {
+    background-color: #1f1f1f; /* Darker background for headers */
+    color: #ffffff; /* Light text for headers */
+}
+
+.dark-mode tr:nth-child(even) {
+    background-color: #1a1a1a; /* Darker row for even rows */
+}
+
+.dark-mode tr:nth-child(odd) {
+    background-color: #121212; /* Slightly lighter for odd rows */
+}
+
 .download-button {
     margin-bottom: 20px; /* Add some space below the button */
     padding: 10px 20px;

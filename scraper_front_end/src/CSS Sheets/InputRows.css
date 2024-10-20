@@ -17,36 +17,46 @@
 
 .row input[type="text"],
 .row label {
-    margin-right: 10px;
-    line-height: 1.5; /* Adjust this to match input and button heights */
+    margin-right: 10px;/* Adjust this to match input and button heights */
+}
+
+.invalid-row label {
+    color: black; /* Change text color to black for labels */
 }
 
 .clear-all-btn {
     margin-left: 10px;
-    padding: 0px 10px;
+    padding: 7px 15px;
     background-color: red;
     color: white;
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
     line-height: 1.5; /* Adjust line-height to ensure alignment */
     cursor: pointer;
+}
+
+.clear-all-btn:hover {
+    background-color: rgb(221, 82, 82);
 }
 
 .clear-btn {
     margin-left: 10px;
-    margin: ;
-    padding: 0px 10px;
+    padding: 4px 15px; /* Padding for buttons */
+    border-radius: 4px; /* Rounded corners */
     background-color: red;
     color: white;
     border: none;
-    border-radius: 3px;
     line-height: 1.5; /* Adjust line-height to ensure alignment */
     cursor: pointer;
 }
 
+.clear-btn:hover {
+    background-color: rgb(221, 82, 82);
+}
+
 .submit-btn {
     margin-left: 10px;
-    padding: 0px 10px;
+    padding: 7px 15px;
     background-color: green;
     color: white;
     border: none;
@@ -55,10 +65,15 @@
     cursor: pointer;
 }
 
+.submit-btn:hover {
+    background-color: rgb(60, 173, 60);
+}
+
 .download-template-btn {
     margin-bottom: 10px;
-    padding: 0px 10px;
-    background-color: blue;
+    padding: 10px 15px; /* Padding for buttons */
+    border-radius: 4px; 
+    background-color: rgb(14, 14, 131);
     color: white;
     border: none;
     border-radius: 3px;
@@ -66,9 +81,13 @@
     cursor: pointer;
 }
 
+.download-template-btn:hover {
+    background-color: rgb(41, 41, 95);
+}
+
 .invalid-row {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
+    background-color: #e2747d;
+    border-color: #eb6e7a;
 }
 
 input[type="number"] {

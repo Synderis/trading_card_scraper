@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import '../CSS Sheets/ResultsPage.css';
 
 interface ResultData {
@@ -30,7 +29,6 @@ interface ResultData {
 const ResultsPage: React.FC = () => {
     const [results, setResults] = useState<ResultData[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchResults = async () => {
@@ -169,10 +167,6 @@ const ResultsPage: React.FC = () => {
         document.body.removeChild(link);
     };
 
-    const goHome = () => {
-        navigate('/'); // Navigate to the root path
-    };
-
     // Function to calculate totals for each grade category
     const calculateTotals = (results: ResultData[]) => {
         const initialTotals = {
@@ -232,9 +226,6 @@ const ResultsPage: React.FC = () => {
             {error && <p>Error: {error}</p>}
             <button onClick={downloadCSV} style={{ marginBottom: '20px' }} className="download-button">
                 Download CSV
-            </button>
-            <button onClick={goHome} style={{ marginBottom: '20px', marginLeft: '10px' }}>
-                Return to Input Page
             </button>
             <table>
                 <thead>
