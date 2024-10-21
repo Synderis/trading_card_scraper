@@ -1,1 +1,6 @@
-/.history/
+.history
+.venv
+.idea
+__pycache__
+build
+node_modules

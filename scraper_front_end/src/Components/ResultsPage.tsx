@@ -24,7 +24,7 @@ const ResultsPage: React.FC = () => {
     useEffect(() => {
         const fetchResults = async () => {
             try {
-                const response = await fetch('http://localhost:8000/results');
+                const response = await fetch(`http://${window.location.hostname}:8000/results`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch results');
                 }

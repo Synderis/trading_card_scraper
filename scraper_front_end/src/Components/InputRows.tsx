@@ -107,12 +107,14 @@ const InputRows: React.FC = () => {
         holo: row.holo,
         reverse_holo: row.reverse_holo,
         first_edition: row.first_edition,
-        card_count: row.card_count, // No need to convert to Number, already handled
+        card_count: row.card_count,
       })),
     };
 
     try {
-      const response = await fetch('http://localhost:8000/submit', {
+      // Constructing the API URL using window.location
+      const apiUrl = `http://${window.location.hostname}:8000/submit`; // Adjust the path as necessary
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -129,6 +131,7 @@ const InputRows: React.FC = () => {
       console.error('Error:', error);
     }
   };
+
 
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -186,7 +189,7 @@ const InputRows: React.FC = () => {
       <h4>Enter the data for each row or upload a CSV file. Rows with potentially invalid CSV data will be marked red.</h4>
       <form onSubmit={handleSubmit}>
         {rows.map((row, index) => (
-          <div key={index} className={`row ${row.isInvalid ? 'invalid-row' : ''}`}>
+          <span key={index} className={`row ${row.isInvalid ? 'invalid-row' : ''}`}>
             <input type="text" placeholder="Card Name" value={row.cardName} onChange={(e) => handleChange(index, 'cardName', e.target.value)} />
             <input type="text" placeholder="Card ID" value={row.cardId} onChange={(e) => handleChange(index, 'cardId', e.target.value)} />
             <label>
@@ -200,7 +203,7 @@ const InputRows: React.FC = () => {
             </label>
             <input type="number" value={row.card_count || ''} onChange={(e) => handleChange(index, 'card_count', e.target.value)} />
             <button type="button" className="clear-btn" onClick={() => handleClearRow(index)}>Clear</button>
-          </div>
+          </span>
         ))}
         <button type="button" onClick={handleAddRows}>Add 10 Rows</button>
         <button type="button" className="clear-all-btn" onClick={handleClearAllRows}>Clear All Rows</button>
